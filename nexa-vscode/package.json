@@ -1,0 +1,28 @@
+{
+  "name": "nexa",
+  "displayName": "Nexa Language",
+  "description": "Syntax highlighting for Nexa",
+  "version": "0.1.0",
+  "publisher": "nexac",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": ["Programming Languages"],
+  "contributes": {
+    "languages": [
+      {
+        "id": "nexa",
+        "aliases": ["Nexa", "nexa"],
+        "extensions": [".nxa"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "nexa",
+        "scopeName": "source.nexa",
+        "path": "./syntaxes/nexa.tmLanguage.json"
+      }
+    ]
+  }
+}

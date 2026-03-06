@@ -1,0 +1,32 @@
+#include <std/io>
+#include <std/random>
+
+let Number_Guess;
+let Blank;
+
+fn main() {
+    while (true) {
+        let Number = random.int(1, 100);
+        while (true) {
+            io.print("Enter your guess: ");
+            Number_Guess = io.readln();
+            let Guess = io.to_int(Number_Guess);
+
+            if (Number > Guess) {
+                io.println("Guess Too Low!");
+            } else if (Number < Guess) {
+                io.println("Guess Too High!");
+            } else if (Number == Guess) {
+                io.println("You Win!");
+                break;
+            } else {
+                io.println("Please enter a valid number!");
+            }
+        }
+        break;
+    }
+    io.println("You May Now Close The Game.");
+    while (true) {
+        Blank = io.readln();
+    }
+}

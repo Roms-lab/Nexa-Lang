@@ -1,0 +1,24 @@
+NexaC Command Line
+==================
+
+USAGE
+  NexaC init [dir]           Scaffold new project (current dir or dir/)
+  NexaC build [dir]          Build .nxa with fn main() or fn __init__()
+  NexaC <file.nxa> [-o <executable>]
+  NexaC <file.nxa> --run
+  NexaC <file.nxa> --source <output.cpp>
+  NexaC --help [page|module]
+  NexaC --version
+
+OPTIONS
+  -o <name>       Output executable or library name
+  --source <f>    Emit C++ only, do not compile
+  --preserve-names, -p  Keep function names (readability)
+  --small         Optimize for smaller output (-Os)
+  --dll     Build Windows .dll (mingw-w64 cross-compile)
+  --shared  Build Linux .so (clang++)
+  --win     Build Windows .exe (mingw-w64 from Linux)
+  fn __init__() in a DLL/SO is auto-executed when the library is loaded
+  --run, -r       Compile to temp file and run
+  --help, -h      Show help
+  --version, -v   Show version

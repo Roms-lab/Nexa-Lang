@@ -1,0 +1,54 @@
+Nexa Control Flow
+=================
+
+CONDITIONALS
+  if (cond) { ... }
+  if (cond) { ... } else { ... }
+  if (cond) { ... } else if (cond) { ... } else { ... }
+
+COMPARISONS
+  ==  !=  <  <=  >  >=
+
+LOGICAL OPERATORS
+  &&   and
+  ||   or
+  !    not
+  Precedence: ! before && before ||
+
+  Examples:
+    if (x > 0 && x < 10) { ... }
+    if (!(x > 0)) { ... }
+    if (a || b) { ... }
+
+SWITCH
+  switch (expr) {
+    case 0:
+      stmts
+      break;
+    case 1:
+    case 2:
+      stmts
+      break;
+    default:
+      stmts
+  }
+  - Int switch: expr is int, case values are integer literals
+  - String switch: expr is string, case values are string literals
+  - Cannot mix int and string cases in same switch
+  - Use break; to exit (C-style fall-through if omitted)
+  - default is optional
+
+LOOPS
+  for (i, n) { ... }  - loop i from 0 to n-1
+  while (cond) { ... }
+  while (true) { ... }   - infinite loop
+  while (false) { ... }  - never runs
+  break;                 - exit loop immediately
+  continue;               - skip to next iteration
+  true, false - boolean literals (like C++)
+
+  Example:
+    while (i < 10) {
+      io.println(i);
+      i = i + 1;
+    }

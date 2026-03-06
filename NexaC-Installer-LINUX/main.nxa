@@ -1,0 +1,256 @@
+#include <std/io>
+#include <std/os>
+#include <std/file>
+
+let title_ascii: string = R"( /$$   /$$                                /$$$$$$ 
+| $$$ | $$                               /$$__  $$
+| $$$$| $$  /$$$$$$  /$$   /$$  /$$$$$$ | $$  \__/
+| $$ $$ $$ /$$__  $$|  $$ /$$/ |____  $$| $$      
+| $$  $$$$| $$$$$$$$ \  $$$$/   /$$$$$$$| $$      
+| $$\  $$$| $$_____/  >$$  $$  /$$__  $$| $$    $$
+| $$ \  $$|  $$$$$$$ /$$/\  $$|  $$$$$$$|  $$$$$$/
+|__/  \__/ \_______/|__/  \__/ \_______/ \______/ 
+                                                  
+                                                  
+                                                  )";
+
+let Plat = os.platform();
+
+let mime_xml: string = R"(<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+  <mime-type type="application/x-nxa">
+    <comment>Nexa Source File</comment>
+    <glob pattern="*.nxa"/>
+  </mime-type>
+</mime-info>
+)";
+
+fn Register_Nxa_Mime_Linux_User() {
+    let Home = os.getenv("HOME");
+    let MimeDir = Home + "/.local/share/mime/packages";
+    os.system("mkdir -p " + MimeDir);
+    file.write(MimeDir + "/nxa.xml", mime_xml);
+    os.system("update-mime-database " + Home + "/.local/share/mime 2>/dev/null");
+}
+
+fn Register_Nxa_Mime_Linux_System() {
+    file.write("/tmp/nxa-mime.xml", mime_xml);
+    os.system("sudo mkdir -p /usr/share/mime/packages");
+    os.system("sudo cp /tmp/nxa-mime.xml /usr/share/mime/packages/nxa.xml");
+    os.system("sudo update-mime-database /usr/share/mime 2>/dev/null");
+}
+
+fn Register_Nxa_Registry_Windows_User(ExePath: string) {
+    os.system("reg add \"HKCU\\Software\\Classes\\.nxa\" /ve /d \"NexaC.SourceFile\" /f");
+    os.system("reg add \"HKCU\\Software\\Classes\\NexaC.SourceFile\" /ve /d \"Nexa Source File\" /f");
+    os.system("reg add \"HKCU\\Software\\Classes\\NexaC.SourceFile\\DefaultIcon\" /ve /d \"" + ExePath + ",0\" /f");
+}
+
+fn Register_Nxa_Registry_Windows_System(ExePath: string) {
+    os.system("reg add \"HKLM\\Software\\Classes\\.nxa\" /ve /d \"NexaC.SourceFile\" /f");
+    os.system("reg add \"HKLM\\Software\\Classes\\NexaC.SourceFile\" /ve /d \"Nexa Source File\" /f");
+    os.system("reg add \"HKLM\\Software\\Classes\\NexaC.SourceFile\\DefaultIcon\" /ve /d \"" + ExePath + ",0\" /f");
+}
+
+fn Install_Clang_Linux() {
+    os.system("which clang++ >/dev/null 2>&1 || (which apt-get >/dev/null 2>&1 && sudo apt-get update && sudo apt-get install -y clang) || (which dnf >/dev/null 2>&1 && sudo dnf install -y clang) || (which pacman >/dev/null 2>&1 && sudo pacman -S --noconfirm clang) || true");
+}
+
+fn Install_Clang_Darwin() {
+    os.system("which clang++ >/dev/null 2>&1 || (xcode-select -p >/dev/null 2>&1 || xcode-select --install) || true");
+}
+
+fn Install_Clang_Windows() {
+    os.system("where clang++ >nul 2>&1 || (winget install LLVM.LLVM --accept-package-agreements --accept-source-agreements 2>nul) || true");
+}
+
+fn Add_To_Path_User_Linux() {
+    let Home = os.getenv("HOME");
+    os.system("grep -q '.local/bin' " + Home + "/.bashrc 2>/dev/null || echo 'export PATH=\"$HOME/.local/bin:$PATH\"' >> " + Home + "/.bashrc");
+    os.system("grep -q '.local/bin' " + Home + "/.profile 2>/dev/null || echo 'export PATH=\"$HOME/.local/bin:$PATH\"' >> " + Home + "/.profile");
+}
+
+fn Add_To_Path_Windows_User(InstallDir: string) {
+    os.system("powershell -Command \"$p=[Environment]::GetEnvironmentVariable('Path','User'); if($p -notlike '*NexaC*'){[Environment]::SetEnvironmentVariable('Path',$p+';" + InstallDir + "','User')}\"");
+}
+
+fn Add_To_Path_Windows_System(InstallDir: string) {
+    os.system("powershell -Command \"$p=[Environment]::GetEnvironmentVariable('Path','Machine'); if($p -notlike '*NexaC*'){[Environment]::SetEnvironmentVariable('Path',$p+';" + InstallDir + "','Machine')}\" 2>nul");
+}
+
+fn Menu() {
+    io.println(title_ascii);
+    io.println("\nWelcome to the NexaC Installer! Please choose an install option.\n");
+    io.println("1. System-wide install & Set .nxa as Nexa Source File. (Requires Admin)");
+    io.println("2. User install & Set .nxa as Nexa Source File.");
+    io.println("");
+    io.print("> ");
+}
+
+fn Install_System_Wide() {
+    let ExeDir = os.exe_dir();
+    if (Plat == "linux") {
+        let Src = "";
+        if (file.exists(ExeDir + "NexaC")) { Src = ExeDir + "NexaC"; }
+        else if (file.exists("NexaC")) { Src = "NexaC"; }
+        else if (file.exists("./NexaC")) { Src = "./NexaC"; }
+        else if (file.exists("../NexaC")) { Src = "../NexaC"; }
+        else if (file.exists("NexaC/NexaC")) { Src = "NexaC/NexaC"; }
+        if (Src != "") {
+        os.system("sudo mkdir -p /usr/local/bin");
+        os.system("sudo cp \"" + Src + "\" /usr/local/bin/NexaC");
+        os.system("sudo ln -sf NexaC /usr/local/bin/nexac");
+        os.system("sudo ln -sf NexaC /usr/local/bin/nexapkg");
+        Register_Nxa_Mime_Linux_System();
+        io.println("Installing clang (required for compiling .nxa files)...");
+        Install_Clang_Linux();
+        io.println("NexaC installed to /usr/local/bin (in PATH). .nxa files recognized as Nexa Source File.");
+        }
+        else {
+            io.println("Error: Cannot find NexaC. Run installer from folder containing NexaC.");
+        }
+    }
+    else if (Plat == "darwin") {
+        let Src = "";
+        if (file.exists(ExeDir + "NexaC")) { Src = ExeDir + "NexaC"; }
+        else if (file.exists("NexaC")) { Src = "NexaC"; }
+        else if (file.exists("./NexaC")) { Src = "./NexaC"; }
+        else if (file.exists("../NexaC")) { Src = "../NexaC"; }
+        else if (file.exists("NexaC/NexaC")) { Src = "NexaC/NexaC"; }
+        if (Src != "") {
+        os.system("sudo mkdir -p /usr/local/bin");
+        os.system("sudo cp \"" + Src + "\" /usr/local/bin/NexaC");
+        os.system("sudo ln -sf NexaC /usr/local/bin/nexac");
+        os.system("sudo ln -sf NexaC /usr/local/bin/nexapkg");
+        Register_Nxa_Mime_Linux_System();
+        io.println("Installing Xcode Command Line Tools (clang)...");
+        Install_Clang_Darwin();
+        io.println("NexaC installed to /usr/local/bin (in PATH). .nxa files recognized as Nexa Source File.");
+        }
+        else {
+            io.println("Error: Cannot find NexaC. Run installer from folder containing NexaC.");
+        }
+    }
+    else if (Plat == "windows") {
+        let Src = "";
+        if (file.exists(ExeDir + "NexaC.exe")) { Src = ExeDir + "NexaC.exe"; }
+        else if (file.exists("NexaC.exe")) { Src = "NexaC.exe"; }
+        else if (file.exists("NexaC\\NexaC.exe")) { Src = "NexaC\\NexaC.exe"; }
+        else if (file.exists("WIN\\NexaC.exe")) { Src = "WIN\\NexaC.exe"; }
+        if (Src != "") {
+        os.system("mkdir \"C:\\Program Files\\NexaC\" 2>nul");
+        os.system("copy /Y \"" + Src + "\" \"C:\\Program Files\\NexaC\\NexaC.exe\"");
+        os.system("copy /Y \"" + Src + "\" \"C:\\Program Files\\NexaC\\nexac.exe\"");
+        Register_Nxa_Registry_Windows_System("C:\\Program Files\\NexaC\\NexaC.exe");
+        io.println("Installing clang (winget)...");
+        Install_Clang_Windows();
+        Add_To_Path_Windows_System("C:\\Program Files\\NexaC");
+        io.println("NexaC installed to C:\\Program Files\\NexaC. Added to system PATH. Restart terminal for PATH to take effect.");
+        }
+        else {
+            io.println("Error: Cannot find NexaC.exe. Run installer from folder containing NexaC.exe.");
+        }
+    }
+    else {
+        io.println("Platform Not Supported!");
+    }
+}
+
+fn Install_User() {
+    let ExeDir = os.exe_dir();
+    if (Plat == "linux") {
+        let Src = "";
+        if (file.exists(ExeDir + "NexaC")) { Src = ExeDir + "NexaC"; }
+        else if (file.exists("NexaC")) { Src = "NexaC"; }
+        else if (file.exists("./NexaC")) { Src = "./NexaC"; }
+        else if (file.exists("../NexaC")) { Src = "../NexaC"; }
+        else if (file.exists("NexaC/NexaC")) { Src = "NexaC/NexaC"; }
+        if (Src != "") {
+        os.system("mkdir -p ~/.local/bin");
+        os.system("cp \"" + Src + "\" ~/.local/bin/NexaC");
+        os.system("ln -sf NexaC ~/.local/bin/nexac");
+        os.system("ln -sf NexaC ~/.local/bin/nexapkg");
+        Register_Nxa_Mime_Linux_User();
+        io.println("Installing clang (required for compiling .nxa files)...");
+        Install_Clang_Linux();
+        Add_To_Path_User_Linux();
+        io.println("NexaC installed to ~/.local/bin. Added to PATH in ~/.bashrc and ~/.profile. Restart terminal or run: source ~/.bashrc");
+        }
+        else {
+            io.println("Error: Cannot find NexaC. Run installer from folder containing NexaC.");
+        }
+    }
+    else if (Plat == "darwin") {
+        let Src = "";
+        if (file.exists(ExeDir + "NexaC")) { Src = ExeDir + "NexaC"; }
+        else if (file.exists("NexaC")) { Src = "NexaC"; }
+        else if (file.exists("./NexaC")) { Src = "./NexaC"; }
+        else if (file.exists("../NexaC")) { Src = "../NexaC"; }
+        else if (file.exists("NexaC/NexaC")) { Src = "NexaC/NexaC"; }
+        if (Src != "") {
+        os.system("mkdir -p ~/.local/bin");
+        os.system("cp \"" + Src + "\" ~/.local/bin/NexaC");
+        os.system("ln -sf NexaC ~/.local/bin/nexac");
+        os.system("ln -sf NexaC ~/.local/bin/nexapkg");
+        Register_Nxa_Mime_Linux_User();
+        io.println("Installing Xcode Command Line Tools (clang)...");
+        Install_Clang_Darwin();
+        Add_To_Path_User_Linux();
+        io.println("NexaC installed to ~/.local/bin. Added to PATH. Restart terminal or run: source ~/.bashrc");
+        }
+        else {
+            io.println("Error: Cannot find NexaC. Run installer from folder containing NexaC.");
+        }
+    }
+    else if (Plat == "windows") {
+        let Src = "";
+        if (file.exists(ExeDir + "NexaC.exe")) { Src = ExeDir + "NexaC.exe"; }
+        else if (file.exists("NexaC.exe")) { Src = "NexaC.exe"; }
+        else if (file.exists("NexaC\\NexaC.exe")) { Src = "NexaC\\NexaC.exe"; }
+        else if (file.exists("WIN\\NexaC.exe")) { Src = "WIN\\NexaC.exe"; }
+        if (Src != "") {
+        let LocalAppData = os.getenv("LOCALAPPDATA");
+        let ExePath = LocalAppData + "\\NexaC\\NexaC.exe";
+        os.system("mkdir \"" + LocalAppData + "\\NexaC\" 2>nul");
+        os.system("copy /Y \"" + Src + "\" \"" + LocalAppData + "\\NexaC\\NexaC.exe\"");
+        os.system("copy /Y \"" + Src + "\" \"" + LocalAppData + "\\NexaC\\nexac.exe\"");
+        os.system("copy /Y \"" + Src + "\" \"" + LocalAppData + "\\NexaC\\nexapkg.exe\"");
+        Register_Nxa_Registry_Windows_User(ExePath);
+        io.println("Installing clang (winget)...");
+        Install_Clang_Windows();
+        Add_To_Path_Windows_User(LocalAppData + "\\NexaC");
+        io.println("NexaC installed to " + LocalAppData + "\\NexaC. Added to PATH. Restart terminal for PATH to take effect.");
+        }
+        else {
+            io.println("Error: Cannot find NexaC.exe. Run installer from folder containing NexaC.exe.");
+        }
+    }
+    else {
+        io.println("Platform Not Supported!");
+    }
+}
+
+fn main() {
+    Menu();
+    let Choice: string = io.readln();
+    let Choice_Int = io.to_int(Choice);
+
+    switch (Choice_Int) {
+        case 1:
+            io.println("Installing NexaC system-wide...");
+            io.println("\nDetected OS: " + Plat);
+            Install_System_Wide();
+            break;
+        case 2:
+            io.println("Installing NexaC to User...");
+            io.println("\nDetected OS: " + Plat);
+            Install_User();
+            break;
+        default:
+            io.println("\nInvalid Option!");
+            io.println("Please Re-Run Installer.");
+            while (true) {
+                let Blank = io.readln();
+            }
+    }
+}

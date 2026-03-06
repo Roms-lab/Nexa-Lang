@@ -1,0 +1,31 @@
+Nexa Includes
+=============
+
+MODULE INCLUDES (angle brackets)
+  #include <std/io>
+  #include <std/os>
+  #include <std/file>
+  #include <std/random>
+  #include <std/dll>
+  - Standard library modules
+
+PACKAGE INCLUDES (angle brackets, non-std)
+  #include <pkgname/module>
+  - Resolved from .nexa/packages/ (project) and ~/.nexa/packages/ (global)
+  - Use nexapkg add <pkg> && nexapkg install to install packages
+
+FILE INCLUDES (quotes)
+  #include "file.nxa"
+  #include "lib/utils.nxa"
+  #include "../shared.nxa"
+  #include "/abs/path.nxa"
+
+  Path rules:
+    "file.nxa"     - Same directory as current file
+    "sub/file.nxa" - Subdirectory
+    "../file.nxa"  - Parent directory
+    "/path.nxa"    - Absolute path (Linux/Windows)
+
+  - Paths are relative to the file containing the #include
+  - Circular includes are prevented
+  - Included files can have their own #includes

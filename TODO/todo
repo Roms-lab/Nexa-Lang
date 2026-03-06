@@ -1,0 +1,4 @@
+NexaC Compiler V1.0 - Unfinished
+NexaC - DLL generation - Done
+Variable Constants - Ex. let const name: string = "Bob"; - Done
+Memory Control - Ex. let memory: unsigned char[4080]; - Done

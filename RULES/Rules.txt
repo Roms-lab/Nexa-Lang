@@ -1,0 +1,7 @@
+1. Version will always stay the same unless I say to increment.
+2. After updating compiler, ALWAYS update the install so its up to date on system. Also run make win for Windows build in WIN/.
+3. #include "file.nxa" uses paths relative to the current file: "lib.nxa" = same dir, "../x.nxa" = parent dir.
+4. NexaC --dll builds Windows .dll (clang++/mingw-w64); NexaC --shared builds Linux .so (clang++); no fn main() needed; use dll.load/dll.call to use. fn __init__() auto-executes when DLL/SO is loaded.
+5. Clean Tests when creating a new feature
+6. All windows builds MUST use Clang, mingw-w64 as a fallback.
+7. Memory control: let name: unsigned char[size]; or let name: int[size]; or let name: char[size]; for fixed-size buffers (no initializer). Use name[i] to read/write.

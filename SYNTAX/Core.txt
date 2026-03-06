@@ -1,0 +1,69 @@
+Nexa Core Syntax
+================
+
+ENTRY POINT
+  fn main() {
+    ...
+  }
+  - Every executable must have exactly one fn main()
+  - DLL builds (--dll) do not require main
+
+FUNCTIONS
+  fn name() { ... }           - No parameters, void return
+  fn name(a, b) { ... }      - Parameters (default int)
+  fn name(a: int, b: string, flag: bool, x: float, c: char) { ... }  - Typed parameters
+  return expr;               - Return value (int)
+  name();                    - Call (statement)
+  let z = name(x, y);        - Call (expression)
+
+  - Parameters: default int, or add : int / : string / : bool / : float / : char
+  - Return type inferred: int if return present, else void
+  - Use --preserve-names to keep names in output (default: mangle)
+
+VARIABLES
+  let name = value;
+  let name;              - uninitialized (defaults to string "")
+  let name: string;      - typed, uninitialized
+  let name: int = 42;    - typed with initializer
+  let const name: string = "Bob";  - constant (immutable, must have initializer)
+
+  Global variables (top-level, outside functions):
+    let count = 0;
+    let msg = "hello";
+    let y = x + 1;   // can use other globals
+    No io.readln() or dll.load() at global scope.
+
+  Local variables (inside functions): same syntax.
+
+  Types (inferred or explicit):
+    int:    let x = 42;  let n: int = -10;  let c: int;
+    string: let s = "hello";  let name: string = io.readln();  let msg: string;
+    bool:   let ok = true;  let flag: bool = false;  let b: bool;
+    float:  let pi = 3.14;  let x: float = 2.5;  let f: float;
+    char:   let c = 'A';  let ch: char = 'x';  let letter: char;
+
+  String escapes: \n \t \r \\ \" \xHH (hex ASCII, e.g. \x41 = 'A')
+  Raw strings: R"()" or R"delim(...)delim" - no escapes, can contain newlines and "
+
+  Initializers:
+    - Number:     let x = 42;
+    - Float:      let pi = 3.14;  let x = .5;
+    - Char:       let c = 'A';  let nl = '\n';
+    - String:     let s = "hi";
+    - Array:      let arr = [1, 2, 3];  arr[i] = x;  (int elements)
+    - io.readln:  let s = io.readln();
+    - file.read:  let s = file.read("path");  (requires std/file)
+    - dll.load:   let h = dll.load("./lib.so");  (requires std/dll)
+    - Expression: let sum = a + b;  let x = add(2, 3);
+    - Bool:       let ok = true;  let flag = false;
+
+  Reassignment:
+    x = expr;   (variable must be declared first; const variables cannot be reassigned)
+    x++;  x--;  (increment/decrement by 1)
+    x += n;  x -= n;  x *= n;  x /= n;  x %= n;  (compound assignment)
+    s += "x";  (string concatenation - += works for strings)
+
+ARITHMETIC
+  + - * / %
+  Precedence: * / % before + -
+  int and float (int + float promotes to float)

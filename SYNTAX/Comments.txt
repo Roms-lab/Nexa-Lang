@@ -1,0 +1,9 @@
+Nexa Comments
+============
+
+LINE COMMENT
+  // rest of line is ignored
+
+BLOCK COMMENT
+  /* ... */
+  - Can span multiple lines

@@ -1,0 +1,124 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "scopeName": "source.nexa",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#preprocessor" },
+    { "include": "#strings" },
+    { "include": "#numbers" },
+    { "include": "#keywords" },
+    { "include": "#operators" },
+    { "include": "#builtins" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.double-slash.nexa",
+          "match": "//.*$"
+        },
+        {
+          "name": "comment.block.nexa",
+          "begin": "/\\*",
+          "end": "\\*/"
+        }
+      ]
+    },
+    "preprocessor": {
+      "patterns": [
+        {
+          "name": "meta.preprocessor.include.nexa",
+          "match": "#include\\s+(<[^>]+>|\"[^\"]*\")",
+          "captures": {
+            "0": { "name": "keyword.control.import.nexa" },
+            "1": { "name": "string.quoted.nexa" }
+          }
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.raw.nexa",
+          "begin": "R\"\\(",
+          "end": "\\)\""
+        },
+        {
+          "name": "string.quoted.double.nexa",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            {
+              "name": "constant.character.escape.nexa",
+              "match": "\\\\."
+            }
+          ]
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.nexa",
+          "match": "-?\\b[0-9]+\\b"
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.nexa",
+          "match": "\\b(fn|main|let|if|else|while|for|return|break|continue)\\b"
+        },
+        {
+          "name": "constant.language.nexa",
+          "match": "\\b(true|false)\\b"
+        }
+      ]
+    },
+    "operators": {
+      "patterns": [
+        {
+          "name": "keyword.operator.comparison.nexa",
+          "match": "==|!=|<=|>="
+        },
+        {
+          "name": "keyword.operator.comparison.nexa",
+          "match": "<|>"
+        },
+        {
+          "name": "keyword.operator.logical.nexa",
+          "match": "&&|\\|\\||!"
+        },
+        {
+          "name": "keyword.operator.assignment.nexa",
+          "match": "\\+=|-=|\\*=|/=|%="
+        },
+        {
+          "name": "keyword.operator.assignment.nexa",
+          "match": "="
+        },
+        {
+          "name": "keyword.operator.increment.nexa",
+          "match": "\\+\\+|--"
+        },
+        {
+          "name": "keyword.operator.arithmetic.nexa",
+          "match": "\\+|-|\\*|/|%"
+        },
+        {
+          "name": "punctuation.nexa",
+          "match": "[\\(\\),;{}\\.\\[\\]]"
+        }
+      ]
+    },
+    "builtins": {
+      "patterns": [
+        {
+          "name": "support.type.nexa",
+          "match": "\\b(io|os|dll|file|random)\\b"
+        }
+      ]
+    }
+  }
+}

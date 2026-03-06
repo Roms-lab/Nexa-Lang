@@ -1,0 +1,51 @@
+Nexa Standard Modules
+======================
+
+#include <std/io>
+  io.print(arg)     - Print to stdout, no newline
+  io.println(arg)  - Print to stdout, add newline
+  Strings support escapes: \n \t \r \\ \" \xHH (hex ASCII)
+  s += "x";        - string concatenation (compound assign)
+  io.readln()      - Read one line from stdin, returns string
+  arg: string literal, int, or variable
+
+#include <std/os>
+  os.system(cmd)    - Run shell command, blocks until complete
+  os.platform()     - Returns "windows", "linux", "darwin", or "unknown"
+  os.getenv(name)   - Get environment variable, returns string (or "")
+  os.exe_dir()      - Directory containing the running executable (trailing slash)
+  cmd: string literal or expression (e.g. "mkdir -p " + dir)
+
+#include <std/random>
+  random.int(min, max)  - Random int in [min, max] inclusive
+  random.seed(n)        - Seed RNG for reproducibility
+  Use: let roll = random.int(1, 6);  random.seed(42);
+
+#include <std/time>
+  time.sleep(duration)      - Sleep for duration (milliseconds)
+  time.seconds(n)           - Returns n * 1000 (for sleep)
+  time.milliseconds(n)      - Returns n (for sleep)
+  Use: time.sleep(time.seconds(1));  time.sleep(time.milliseconds(250));
+
+#include <std/file>
+  file.read(path)       - Read entire file, returns string
+  file.write(path, c)   - Write content to file (overwrites)
+  file.append(path, c)  - Append content to file
+  file.exists(path)     - Returns 1 if exists, 0 otherwise
+  pathVar.Write(c)      - Write to path in variable (e.g. SaveData.Write("Test"))
+  pathVar.Append(c)     - Append to path in variable
+  path, content: string or variable
+
+#include <std/dll>
+  dll.load(path)    - Load .so/.dll, returns handle (int)
+  dll.call(h, "sym") - Call void fn() from loaded library
+  path: string, e.g. "./mylib.so"
+  Use with: let h = dll.load("./lib.so");  dll.call(h, "func_name");
+
+PACKAGES (nexapkg)
+  nexapkg init           - Create nexapkg.json
+  nexapkg add user/repo  - Add GitHub package
+  nexapkg add ./path     - Add local package
+  nexapkg install       - Install to .nexa/packages/
+  nexapkg list           - List dependencies
+  #include <pkgname/module> - Use installed package
