@@ -1,3 +1,4 @@
-./NexaC-Installer-WINDOWS
-./NexaC-Installer-LINUX
-./RULES
+NexaC
+NexaC-Installer-WINDOWS/
+NexaC-Installer-LINUX/
+RULES/
